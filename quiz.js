@@ -1,75 +1,125 @@
+// Show the difficulty selection modal when the page loads
 document.addEventListener("DOMContentLoaded", function () {
-    const questionElement = document.getElementById("question");
-    const optionsElement = document.getElementById("options");
-    const timerElement = document.getElementById("timer");
-    const correctCountElement = document.getElementById("correctCount");
-    const wrongCountElement = document.getElementById("wrongCount");
-
-    let questions = [
-        { question: "What is 2 + 2?", options: ["3", "4", "5"], answer: "4" },
-        { question: "What is the capital of France?", options: ["London", "Paris", "Berlin"], answer: "Paris" },
-        { question: "What is the largest planet?", options: ["Earth", "Jupiter", "Mars"], answer: "Jupiter" }
-    ];
-
-    let currentQuestionIndex = 0;
-    let correctCount = 0;
-    let wrongCount = 0;
-    let timeLeft = 10;
-    let timer;
-
-    function loadQuestion() {
-        if (currentQuestionIndex >= questions.length) {
-            questionElement.textContent = "Quiz Over!";
-            optionsElement.innerHTML = `<button class="btn btn-success" onclick="restartQuiz()">Restart</button>`;
-            clearInterval(timer);
-            return;
-        }
-
-        let currentQuestion = questions[currentQuestionIndex];
-        questionElement.textContent = currentQuestion.question;
-        optionsElement.innerHTML = "";
-
-        currentQuestion.options.forEach(option => {
-            let button = document.createElement("button");
-            button.textContent = option;
-            button.classList.add("btn", "btn-outline-primary", "m-2");
-            button.onclick = () => checkAnswer(option, currentQuestion.answer);
-            optionsElement.appendChild(button);
-        });
-
-        resetTimer();
-    }
-
-    function checkAnswer(selected, correct) {
-        clearInterval(timer);
-
-        if (selected === correct) {
-            correctCount++;
-            correctCountElement.textContent = correctCount;
-        } else {
-            wrongCount++;
-            wrongCountElement.textContent = wrongCount;
-        }
-
-        currentQuestionIndex++;
-        setTimeout(loadQuestion, 1000);
-    }
-
-    function resetTimer() {
-        timeLeft = 10;
-        timerElement.textContent = `Time Left: ${timeLeft}s`;
-        clearInterval(timer);
-        timer = setInterval(() => {
-            timeLeft--;
-            timerElement.textContent = `Time Left: ${timeLeft}s`;
-            if (timeLeft <= 0) {
-                clearInterval(timer); wrongCount++; wrongCountElement.textContent = wrongCount;
-                currentQuestionIndex++; loadQuestion();
-            }
-        }, 1000);
-    } function restartQuiz() {
-        currentQuestionIndex = 0;
-        correctCount = 0; wrongCount = 0; correctCountElement.textContent = "0"; wrongCountElement.textContent = "0";
-        loadQuestion();
-    } loadQuestion();
+    let difficultyModal = new bootstrap.Modal(document.getElementById("difficultyModal"));
+    difficultyModal.show(); // Show modal on page load
 });
+
+let currentQuestionIndex = 0;
+let correctCount = 0;
+let wrongCount = 0;
+let selectedQuestions = [];
+let timer;
+let timeLeft = 10; // 10 seconds per question
+
+// Start the quiz when the user selects difficulty and clicks "Start"
+function startQuiz() {
+    let difficulty = document.getElementById("difficulty").value;
+    selectedQuestions = questions[difficulty]; // Load questions based on difficulty
+
+    currentQuestionIndex = 0;
+    correctCount = 0;
+    wrongCount = 0;
+    document.getElementById("correctCount").textContent = "0";
+    document.getElementById("wrongCount").textContent = "0";
+
+    document.getElementById("quizContainer").style.display = "block"; // Show quiz
+    loadQuestion(); // Load first question
+}
+
+// Load a question
+function loadQuestion() {
+    if (currentQuestionIndex >= selectedQuestions.length) {
+        endQuiz(); // End quiz if no more questions
+        return;
+    }
+
+    let questionData = selectedQuestions[currentQuestionIndex];
+    document.getElementById("question").textContent = questionData.question;
+
+    let optionsContainer = document.getElementById("options");
+    optionsContainer.innerHTML = ""; // Clear previous options
+
+    questionData.options.forEach(option => {
+        let button = document.createElement("button");
+        button.textContent = option;
+        button.classList.add("btn", "btn-outline-primary", "m-2");
+        button.onclick = function () { checkAnswer(option, questionData.answer); };
+        optionsContainer.appendChild(button);
+    });
+
+    // Start timer
+    timeLeft = 10;
+    document.getElementById("timer").textContent = `Time Left: ${timeLeft}s`;
+    clearInterval(timer);
+    timer = setInterval(updateTimer, 1000);
+}
+
+// Timer function (decreases every second)
+function updateTimer() {
+    if (timeLeft > 0) {
+        timeLeft--;
+        document.getElementById("timer").textContent = `Time Left: ${timeLeft}s`;
+    } else {
+        clearInterval(timer);
+        wrongCount++;
+        document.getElementById("wrongCount").textContent = wrongCount;
+        nextQuestion(); // Move to next question if time runs out
+    }
+}
+
+//  Check if the answer is correct
+function checkAnswer(selectedOption, correctAnswer) {
+    clearInterval(timer); // Stop timer
+
+    if (selectedOption === correctAnswer) {
+        correctCount++;
+        document.getElementById("correctCount").textContent = correctCount;
+    } else {
+        wrongCount++;
+        document.getElementById("wrongCount").textContent = wrongCount;
+    }
+
+    nextQuestion(); // Load next question
+}
+
+//  Load the next question
+function nextQuestion() {
+    currentQuestionIndex++;
+    loadQuestion();
+}
+
+// End the quiz
+function endQuiz() {
+    alert(`Quiz Over! Correct: ${correctCount}, Wrong: ${wrongCount}`);
+    restartQuiz(); // Restart quiz
+}
+
+// Restart the quiz (resets everything and shows the modal)
+function restartQuiz() {
+    currentQuestionIndex = 0;
+    correctCount = 0;
+    wrongCount = 0;
+
+    document.getElementById("correctCount").textContent = "0";
+    document.getElementById("wrongCount").textContent = "0";
+    document.getElementById("quizContainer").style.display = "none"; // Hide quiz
+
+    let difficultyModal = new bootstrap.Modal(document.getElementById("difficultyModal"));
+    difficultyModal.show(); // Show difficulty selection modal again
+}
+
+// Question bank categorized by difficulty
+let questions = {
+    easy: [
+        { question: "What is 2 + 2?", options: ["3", "4", "5"], answer: "4" },
+        { question: "What color is the sky?", options: ["Blue", "Green", "Red"], answer: "Blue" }
+    ],
+    medium: [
+        { question: "What is the capital of France?", options: ["London", "Paris", "Berlin"], answer: "Paris" },
+        { question: "Which element has the symbol O?", options: ["Gold", "Oxygen", "Iron"], answer: "Oxygen" }
+    ],
+    hard: [
+        { question: "What is the square root of 144?", options: ["10", "12", "14"], answer: "12" },
+        { question: "Who discovered gravity?", options: ["Einstein", "Newton", "Galileo"], answer: "Newton" }
+    ]
+};
