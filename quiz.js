@@ -1,8 +1,5 @@
-// Show the difficulty selection modal when the page loads
-document.addEventListener("DOMContentLoaded", function () {
-    let difficultyModal = new bootstrap.Modal(document.getElementById("difficultyModal"));
-    difficultyModal.show(); // Show modal on page load
-});
+//  Create the modal instance outside of the function
+let difficultyModal = new bootstrap.Modal(document.getElementById("difficultyModal"));
 
 let currentQuestionIndex = 0;
 let correctCount = 0;
@@ -10,6 +7,11 @@ let wrongCount = 0;
 let selectedQuestions = [];
 let timer;
 let timeLeft = 10; // 10 seconds per question
+
+//  Show the difficulty selection modal when the page loads
+document.addEventListener("DOMContentLoaded", function () {
+    difficultyModal.show(); // Show modal on page load
+});
 
 // Start the quiz when the user selects difficulty and clicks "Start"
 function startQuiz() {
@@ -23,6 +25,10 @@ function startQuiz() {
     document.getElementById("wrongCount").textContent = "0";
 
     document.getElementById("quizContainer").style.display = "block"; // Show quiz
+
+    //  Close the modal programmatically using the created instance
+    difficultyModal.hide(); // Hide the modal after clicking Start Quiz
+
     loadQuestion(); // Load first question
 }
 
@@ -67,7 +73,7 @@ function updateTimer() {
     }
 }
 
-//  Check if the answer is correct
+// Check if the answer is correct
 function checkAnswer(selectedOption, correctAnswer) {
     clearInterval(timer); // Stop timer
 
@@ -94,7 +100,7 @@ function endQuiz() {
     restartQuiz(); // Restart quiz
 }
 
-// Restart the quiz (resets everything and shows the modal)
+//  Restart the quiz (resets everything and shows the modal)
 function restartQuiz() {
     currentQuestionIndex = 0;
     correctCount = 0;
@@ -104,11 +110,10 @@ function restartQuiz() {
     document.getElementById("wrongCount").textContent = "0";
     document.getElementById("quizContainer").style.display = "none"; // Hide quiz
 
-    let difficultyModal = new bootstrap.Modal(document.getElementById("difficultyModal"));
     difficultyModal.show(); // Show difficulty selection modal again
 }
 
-// Question bank categorized by difficulty
+//  Question bank categorized by difficulty
 let questions = {
     easy: [
         { question: "What is 2 + 2?", options: ["3", "4", "5"], answer: "4" },
