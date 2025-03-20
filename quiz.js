@@ -1,3 +1,4 @@
+
 //  Create the modal instance outside of the function
 let difficultyModal = new bootstrap.Modal(document.getElementById("difficultyModal"));
 
@@ -117,7 +118,8 @@ function restartQuiz() {
 let questions = {
     easy: [
         { question: "What is 2 + 2?", options: ["3", "4", "5"], answer: "4" },
-        { question: "What color is the sky?", options: ["Blue", "Green", "Red"], answer: "Blue" }
+        { question: "What color is the sky?", options: ["Blue", "Green", "Red"], answer: "Blue" },
+        { question: "what is the air speed velocity of an unladen swallow?", options: ["African or European?", "What do you mean? An African or European swallow?", "I don't know that!"], answer: "What do you mean? An African or European swallow?" }
     ],
     medium: [
         { question: "What is the capital of France?", options: ["London", "Paris", "Berlin"], answer: "Paris" },
