@@ -27,8 +27,8 @@ function fetchCategories() {
 function saveSettings() {
     let settings = {
         category: document.getElementById("category").value,
-        difficulty: document.querySelector("input[name='difficulty']:checked").value,
-        type: document.querySelector("input[name='questionType']:checked").value,
+        difficulty: document.getElementById("difficulty").value,
+        type: document.getElementById("questionType").value,
         amount: document.getElementById("numQuestions").value
     };
 
