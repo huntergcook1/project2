@@ -88,7 +88,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Show Next Button
         nextButton.style.display = "block";
-        nextButton.addEventListener("click", nextQuestion);
     }
 
     // Move to the next question
@@ -121,6 +120,11 @@ document.addEventListener("DOMContentLoaded", function () {
             };
             saveResult(result);
         });
+
+        // Automatically redirect to stats page after saving result
+        setTimeout(function () {
+            window.location.href = "stats.html";  // Navigate to stats page after a short delay
+        }, 2000);  // Delay for 2 seconds to show the result first
     }
 
     // Save result to localStorage
@@ -138,4 +142,7 @@ document.addEventListener("DOMContentLoaded", function () {
             [array[i], array[j]] = [array[j], array[i]];
         }
     }
+
+    // Event listener for Next button
+    document.getElementById("nextButton").addEventListener("click", nextQuestion);
 });

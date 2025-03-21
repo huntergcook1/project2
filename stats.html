@@ -11,25 +11,38 @@
 <body class="bg-light">
 
     <div class="container text-center">
-        <h2 class="my-4">Quiz Stats</h2>
+        <h2 class="my-4">Trivia Stats</h2>
 
-        <div id="stats" class="table-responsive">
+        <!-- Display General Stats -->
+        <div id="generalStats" class="mb-4">
+            <h4>General Stats</h4>
+            <p id="totalGames">Total Games Played: 0</p>
+            <p id="averageScore">Average Score: 0</p>
+            <p id="fastestTime">Fastest Completion Time: 0 seconds</p>
+        </div>
+
+        <!-- Display Game History -->
+        <h4>Game History</h4>
+        <div id="gameHistory" class="table-responsive">
             <!-- Table to display saved results -->
             <table class="table table-bordered">
                 <thead>
                     <tr>
                         <th>Date</th>
                         <th>Score</th>
-                        <th>Time Taken (s)</th>
+                        <th>Time Taken</th>
+                        <th>Category</th>
+                        <th>Difficulty</th>
                     </tr>
                 </thead>
-                <tbody id="statsList">
-                    <!-- Stats will be dynamically populated here -->
+                <tbody id="gameList">
+                    <!-- Game records will be dynamically populated here -->
                 </tbody>
             </table>
         </div>
 
-        <a href="quiz.html" class="btn btn-primary">Back to Quiz</a>
+        <!-- Return Button -->
+        <a href="login.html" class="btn btn-primary mt-3">Return to Setup</a>
     </div>
 
     <script src="stats.js"></script>
