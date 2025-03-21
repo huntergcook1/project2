@@ -111,15 +111,16 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("score").textContent = `${score} out of ${questions.length}`;
         document.getElementById("timeTaken").textContent = `${totalTime} seconds`;
 
-        // Save result to localStorage
-        document.getElementById("saveResult").addEventListener("click", function () {
-            const result = {
-                score: score,
-                timeTaken: totalTime,
-                date: new Date().toLocaleString()
-            };
-            saveResult(result);
-        });
+        // Save result to localStorage automatically
+        const result = {
+            score: score,
+            timeTaken: totalTime,
+            date: new Date().toLocaleString(),
+            totalQuestions: questions.length,
+            category: settings.category,
+            difficulty: settings.difficulty
+        };
+        saveResult(result);
 
         // Automatically redirect to stats page after saving result
         setTimeout(function () {
@@ -132,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let results = JSON.parse(localStorage.getItem("quizResults")) || [];
         results.push(result);
         localStorage.setItem("quizResults", JSON.stringify(results));
-        alert("Result saved!");
+        console.log("Result saved!");
     }
 
     // Shuffle array function for randomizing answers
