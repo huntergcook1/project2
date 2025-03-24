@@ -1,0 +1,1 @@
+ Welcome to the Flashcard Page! set what topic you would like to be quized on, type of quiz, and difficulty. try to beat your scores.
