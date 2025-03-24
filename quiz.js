@@ -5,13 +5,12 @@ document.addEventListener("DOMContentLoaded", function () {
     let score = 0;
     let timer;
     let timeRemaining = 15;
-    let startTime = Date.now();  // Track start time for total time taken
+    let startTime = Date.now();
     let questions = [];
 
     // Fetch trivia questions based on saved settings
     fetchQuestions();
 
-    // Fetch questions from the API
     function fetchQuestions() {
         const url = `https://opentdb.com/api.php?amount=${settings.amount}&category=${settings.category}&difficulty=${settings.difficulty}&type=${settings.type}`;
 
@@ -24,10 +23,11 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(error => console.error("Error fetching questions:", error));
     }
 
-    // Load a question
     function loadQuestion() {
         const question = questions[currentQuestionIndex];
-        document.getElementById("questionText").textContent = question.question;
+
+        // Decode HTML entities for question text
+        document.getElementById("questionText").innerHTML = decodeHTMLEntities(question.question);
         document.getElementById("questionNumber").textContent = `Question ${currentQuestionIndex + 1} of ${settings.amount}`;
 
         // Set up timer
@@ -38,25 +38,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Display answer options
         const options = [...question.incorrect_answers, question.correct_answer];
-        shuffleArray(options);  // Shuffle the answer options
+        shuffleArray(options);
 
         const answerOptions = document.getElementById("answerOptions");
-        answerOptions.innerHTML = '';
+        answerOptions.innerHTML = "";
         options.forEach(option => {
             const button = document.createElement("button");
             button.classList.add("btn", "btn-outline-primary", "m-2");
-            button.textContent = option;
-            button.disabled = false;  // Enable the button initially
+
+            // Decode HTML entities for answer options
+            button.innerHTML = decodeHTMLEntities(option);
+
+            button.disabled = false;
             button.addEventListener("click", () => checkAnswer(button, option, question.correct_answer));
             answerOptions.appendChild(button);
         });
 
-        // Reset feedback and next button visibility
-        document.getElementById("feedback").textContent = '';
+        document.getElementById("feedback").textContent = "";
         document.getElementById("nextButton").style.display = "none";
     }
 
-    // Timer update
     function updateTimer() {
         timeRemaining--;
         document.getElementById("timer").textContent = `Time Remaining: ${timeRemaining}s`;
@@ -66,19 +67,16 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Check if the answer is correct
     function checkAnswer(button, selectedAnswer, correctAnswer) {
         const feedback = document.getElementById("feedback");
         const nextButton = document.getElementById("nextButton");
 
-        // Stop the timer when an answer is selected
         clearInterval(timer);
 
-        // Disable all other buttons
+        // Disable all buttons
         const answerButtons = document.querySelectorAll("#answerOptions button");
-        answerButtons.forEach(btn => btn.disabled = true);
+        answerButtons.forEach(btn => (btn.disabled = true));
 
-        // Check if the answer is correct
         if (selectedAnswer === correctAnswer) {
             feedback.textContent = "Correct!";
             score++;
@@ -86,11 +84,9 @@ document.addEventListener("DOMContentLoaded", function () {
             feedback.textContent = "Wrong!";
         }
 
-        // Show Next Button
         nextButton.style.display = "block";
     }
 
-    // Move to the next question
     function nextQuestion() {
         currentQuestionIndex++;
         if (currentQuestionIndex < questions.length) {
@@ -100,18 +96,15 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Show the results at the end of the quiz
     function showResults() {
         clearInterval(timer);
         document.getElementById("quiz-container").classList.add("d-none");
         document.getElementById("results").classList.remove("d-none");
 
-        // Calculate total time taken
-        const totalTime = Math.floor((Date.now() - startTime) / 1000); // in seconds
+        const totalTime = Math.floor((Date.now() - startTime) / 1000);
         document.getElementById("score").textContent = `${score} out of ${questions.length}`;
         document.getElementById("timeTaken").textContent = `${totalTime} seconds`;
 
-        // Save result to localStorage automatically
         const result = {
             score: score,
             timeTaken: totalTime,
@@ -122,21 +115,17 @@ document.addEventListener("DOMContentLoaded", function () {
         };
         saveResult(result);
 
-        // Automatically redirect to stats page after saving result
-        setTimeout(function () {
-            window.location.href = "stats.html";  // Navigate to stats page after a short delay
-        }, 2000);  // Delay for 2 seconds to show the result first
+        setTimeout(() => {
+            window.location.href = "stats.html";
+        }, 2000);
     }
 
-    // Save result to localStorage
     function saveResult(result) {
         let results = JSON.parse(localStorage.getItem("quizResults")) || [];
         results.push(result);
         localStorage.setItem("quizResults", JSON.stringify(results));
-        console.log("Result saved!");
     }
 
-    // Shuffle array function for randomizing answers
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -144,6 +133,12 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Event listener for Next button
+    // Function to decode HTML entities
+    function decodeHTMLEntities(text) {
+        const textArea = document.createElement("textarea");
+        textArea.innerHTML = text;
+        return textArea.value;
+    }
+
     document.getElementById("nextButton").addEventListener("click", nextQuestion);
 });
